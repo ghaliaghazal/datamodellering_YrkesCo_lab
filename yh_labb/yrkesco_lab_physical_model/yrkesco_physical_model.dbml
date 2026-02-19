@@ -1,0 +1,86 @@
+Table Course {
+  course_id INTEGER [primary key]
+  course_name VARCHAR(50) [not null]
+  course_code VARCHAR(50) [not null]
+  description TEXT [not null]
+  credits SMALLINT [not null]
+}
+
+Table PersonalInfo {
+  person_id INTEGER [primary key]
+  personal_number VARCHAR(50) [not null]
+}
+
+Table Program {
+  program_id INTEGER [primary key]
+  program_name VARCHAR(100) [not null]
+  description TEXT
+}
+
+
+Table ProgramCourse {
+  program_id INTEGER [not null, ref: > Program.program_id]
+  course_id INTEGER [not null, ref: > Course.course_id]
+  indexes {
+    (program_id, course_id) [unique]
+  }
+}
+
+Table ProgramLeader {
+  leader_id INTEGER [primary key]
+  first_name VARCHAR(50) [not null]
+  last_name VARCHAR(50) [not null]
+  email VARCHAR(255) [not null]
+  person_id INTEGER [not null, ref: > PersonalInfo.person_id]
+}
+
+
+Table Company {
+  company_id INTEGER [primary key]
+  name VARCHAR(100) [not null]
+  org_number VARCHAR(50) [not null]
+  f_tax BOOLEAN [not null]
+  address VARCHAR(100) [not null]
+  email VARCHAR(255)
+  phone_number VARCHAR(50)
+  hourly_rate NUMERIC(5,2)
+}
+
+Table Instructor {
+  instructor_id INTEGER [primary key]
+  first_name VARCHAR(50) [not null]
+  last_name VARCHAR(50) [not null]
+  email VARCHAR(100) [not null]
+  company_id INTEGER [ref: > Company.company_id]
+  person_id INTEGER [not null, ref: > PersonalInfo.person_id]
+}
+
+Table Class {
+  class_id INTEGER [primary key]
+  program_id INTEGER [not null, ref: > Program.program_id]
+  leader_id INTEGER [not null, ref: > ProgramLeader.leader_id]
+  campus_id INTEGER [not null, ref: > Campus.campus_id]
+  start_date DATE [not null]
+}
+
+Table Student {
+  student_id INTEGER [primary key]
+  first_name VARCHAR(50) [not null]
+  last_name VARCHAR(50) [not null]
+  email VARCHAR(255) [not null]
+  class_id INTEGER [not null, ref: > Class.class_id]
+  person_id INTEGER [not null, ref: > PersonalInfo.person_id]
+}
+
+Table CourseInstructor {
+  course_id INTEGER [not null, ref: > Course.course_id]
+  instructor_id INTEGER [not null, ref: > Instructor.instructor_id]
+  indexes {
+    (course_id, instructor_id) [unique]
+  }
+}
+
+Table Campus {
+  campus_id INTEGER [primary key]
+  location VARCHAR(100) [not null]
+}
