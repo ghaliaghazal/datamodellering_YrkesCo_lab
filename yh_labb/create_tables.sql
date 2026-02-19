@@ -1,86 +1,106 @@
-Table Course {
-  course_id INTEGER [primary key]
-  course_name VARCHAR(50) [not null]
-  course_code VARCHAR(50) [not null]
-  description TEXT [not null]
-  credits SMALLINT [not null]
-}
+CREATE TABLE "Course" (
+  "course_id" INTEGER PRIMARY KEY,
+  "course_name" VARCHAR(50) NOT NULL,
+  "course_code" VARCHAR(50) NOT NULL,
+  "description" TEXT NOT NULL,
+  "credits" SMALLINT NOT NULL
+);
 
-Table PersonalInfo {
-  person_id INTEGER [primary key]
-  personal_number VARCHAR(50) [not null]
-}
+CREATE TABLE "PersonalInfo" (
+  "person_id" INTEGER PRIMARY KEY,
+  "personal_number" VARCHAR(50) NOT NULL
+);
 
-Table Program {
-  program_id INTEGER [primary key]
-  program_name VARCHAR(100) [not null]
-  description TEXT
-}
+CREATE TABLE "Program" (
+  "program_id" INTEGER PRIMARY KEY,
+  "program_name" VARCHAR(100) NOT NULL,
+  "description" TEXT
+);
 
+CREATE TABLE "ProgramCourse" (
+  "program_id" INTEGER NOT NULL,
+  "course_id" INTEGER NOT NULL
+);
 
-Table ProgramCourse {
-  program_id INTEGER [not null, ref: > Program.program_id]
-  course_id INTEGER [not null, ref: > Course.course_id]
-  indexes {
-    (program_id, course_id) [unique]
-  }
-}
+CREATE TABLE "ProgramLeader" (
+  "leader_id" INTEGER PRIMARY KEY,
+  "first_name" VARCHAR(50) NOT NULL,
+  "last_name" VARCHAR(50) NOT NULL,
+  "email" VARCHAR(255) NOT NULL,
+  "person_id" INTEGER NOT NULL
+);
 
-Table ProgramLeader {
-  leader_id INTEGER [primary key]
-  first_name VARCHAR(50) [not null]
-  last_name VARCHAR(50) [not null]
-  email VARCHAR(255) [not null]
-  person_id INTEGER [not null, ref: > PersonalInfo.person_id]
-}
+CREATE TABLE "Company" (
+  "company_id" INTEGER PRIMARY KEY,
+  "name" VARCHAR(100) NOT NULL,
+  "org_number" VARCHAR(50) NOT NULL,
+  "f_tax" BOOLEAN NOT NULL,
+  "address" VARCHAR(100) NOT NULL,
+  "email" VARCHAR(255),
+  "phone_number" VARCHAR(50),
+  "hourly_rate" NUMERIC(5,2)
+);
 
+CREATE TABLE "Instructor" (
+  "instructor_id" INTEGER PRIMARY KEY,
+  "first_name" VARCHAR(50) NOT NULL,
+  "last_name" VARCHAR(50) NOT NULL,
+  "email" VARCHAR(100) NOT NULL,
+  "company_id" INTEGER,
+  "person_id" INTEGER NOT NULL
+);
 
-Table Company {
-  company_id INTEGER [primary key]
-  name VARCHAR(100) [not null]
-  org_number VARCHAR(50) [not null]
-  f_tax BOOLEAN [not null]
-  address VARCHAR(100) [not null]
-  email VARCHAR(255)
-  phone_number VARCHAR(50)
-  hourly_rate NUMERIC(5,2)
-}
+CREATE TABLE "Class" (
+  "class_id" INTEGER PRIMARY KEY,
+  "program_id" INTEGER NOT NULL,
+  "leader_id" INTEGER NOT NULL,
+  "campus_id" INTEGER NOT NULL,
+  "start_date" DATE NOT NULL
+);
 
-Table Instructor {
-  instructor_id INTEGER [primary key]
-  first_name VARCHAR(50) [not null]
-  last_name VARCHAR(50) [not null]
-  email VARCHAR(100) [not null]
-  company_id INTEGER [ref: > Company.company_id]
-  person_id INTEGER [not null, ref: > PersonalInfo.person_id]
-}
+CREATE TABLE "Student" (
+  "student_id" INTEGER PRIMARY KEY,
+  "first_name" VARCHAR(50) NOT NULL,
+  "last_name" VARCHAR(50) NOT NULL,
+  "email" VARCHAR(255) NOT NULL,
+  "class_id" INTEGER NOT NULL,
+  "person_id" INTEGER NOT NULL
+);
 
-Table Class {
-  class_id INTEGER [primary key]
-  program_id INTEGER [not null, ref: > Program.program_id]
-  leader_id INTEGER [not null, ref: > ProgramLeader.leader_id]
-  campus_id INTEGER [not null, ref: > Campus.campus_id]
-  start_date DATE [not null]
-}
+CREATE TABLE "CourseInstructor" (
+  "course_id" INTEGER NOT NULL,
+  "instructor_id" INTEGER NOT NULL
+);
 
-Table Student {
-  student_id INTEGER [primary key]
-  first_name VARCHAR(50) [not null]
-  last_name VARCHAR(50) [not null]
-  email VARCHAR(255) [not null]
-  class_id INTEGER [not null, ref: > Class.class_id]
-  person_id INTEGER [not null, ref: > PersonalInfo.person_id]
-}
+CREATE TABLE "Campus" (
+  "campus_id" INTEGER PRIMARY KEY,
+  "location" VARCHAR(100) NOT NULL
+);
 
-Table CourseInstructor {
-  course_id INTEGER [not null, ref: > Course.course_id]
-  instructor_id INTEGER [not null, ref: > Instructor.instructor_id]
-  indexes {
-    (course_id, instructor_id) [unique]
-  }
-}
+CREATE UNIQUE INDEX ON "ProgramCourse" ("program_id", "course_id");
 
-Table Campus {
-  campus_id INTEGER [primary key]
-  location VARCHAR(100) [not null]
-}
+CREATE UNIQUE INDEX ON "CourseInstructor" ("course_id", "instructor_id");
+
+ALTER TABLE "ProgramCourse" ADD FOREIGN KEY ("program_id") REFERENCES "Program" ("program_id");
+
+ALTER TABLE "ProgramCourse" ADD FOREIGN KEY ("course_id") REFERENCES "Course" ("course_id");
+
+ALTER TABLE "ProgramLeader" ADD FOREIGN KEY ("person_id") REFERENCES "PersonalInfo" ("person_id");
+
+ALTER TABLE "Instructor" ADD FOREIGN KEY ("company_id") REFERENCES "Company" ("company_id");
+
+ALTER TABLE "Instructor" ADD FOREIGN KEY ("person_id") REFERENCES "PersonalInfo" ("person_id");
+
+ALTER TABLE "Class" ADD FOREIGN KEY ("program_id") REFERENCES "Program" ("program_id");
+
+ALTER TABLE "Class" ADD FOREIGN KEY ("leader_id") REFERENCES "ProgramLeader" ("leader_id");
+
+ALTER TABLE "Class" ADD FOREIGN KEY ("campus_id") REFERENCES "Campus" ("campus_id");
+
+ALTER TABLE "Student" ADD FOREIGN KEY ("class_id") REFERENCES "Class" ("class_id");
+
+ALTER TABLE "Student" ADD FOREIGN KEY ("person_id") REFERENCES "PersonalInfo" ("person_id");
+
+ALTER TABLE "CourseInstructor" ADD FOREIGN KEY ("course_id") REFERENCES "Course" ("course_id");
+
+ALTER TABLE "CourseInstructor" ADD FOREIGN KEY ("instructor_id") REFERENCES "Instructor" ("instructor_id");
