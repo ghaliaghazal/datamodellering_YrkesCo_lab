@@ -11,3 +11,12 @@ VALUES
 (1, 'Datamodellering', 'DM25', 20, 'Grundläggande datamodellering'),
 (2, 'Databaser', 'DB25', 30, 'SQL och databashantering');
 
+
+INSERT INTO "ProgramCourse" (program_id, course_id) VALUES
+(1, 1),
+(1, 2),
+(2, 1);
+
+INSERT INTO "Student" (student_id, first_name, last_name, email, campus_id) VALUES 
+(1, 'Alice', 'Andersson'), 
+(2, 'Bob', 'Bergström'),  
